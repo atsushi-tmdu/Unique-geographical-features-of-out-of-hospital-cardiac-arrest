@@ -25,16 +25,6 @@ inla_df<-mutate(inla_df, total_time = if_else(condition = delta_time1 > 0 & delt
 inla_df<-inla_df %>% filter(total_time!=-1)
 inla_df$normalized_total_time<- as.numeric(inla_df$total_time)/as.numeric(inla_df$total_time %>% mean())
 
-#geographical
-coords<- inla_df %>%  dplyr::select(longitude,latitude)
-coords$admYM<-NULL
-pj<-CRS("+proj=longlat +ellps=WGS84 +no_defs")
-jpnmap2<-spTransform(jpnmap2,CRS=pj)
-colnames(coords) <- c("x","y")
-coordinates(coords) <- ~x+y
-sp <-SpatialPoints(coords, proj4string = pj)
-legionmap<-spTransform(legionmap,CRS=pj)
-
 
 dt2_list_df<-inla_df %>% dplyr::select(delta_time2,cpc1_2) %>% arrange(delta_time2) %>% mutate(cum_cpc1_2=cumsum(cpc1_2)) %>% group_by(delta_time2) %>% summarise(cum_cpc1_2=max(cum_cpc1_2),n=n()) %>% mutate(cum_n=cumsum(n)) %>% ungroup() %>% mutate(ratio=cum_cpc1_2/cum_n)
 dt2_list_df %>% dplyr::filter(delta_time2<13*60) %>% mutate(delta_time2_min=(delta_time2/60))
